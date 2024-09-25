@@ -8,9 +8,10 @@ pipeline {
   agent any
   stages {
     stage('Checkout Source') {
-      steps {
-        git 'https://github.com/halimo22/Jenkins_project'
-      }
+    steps {
+        git branch: 'main', url: 'https://github.com/halimo22/Jenkins_project', credentialsId: 'github'
+    }
+    }
     }
     stage('Build images') {
       steps{
