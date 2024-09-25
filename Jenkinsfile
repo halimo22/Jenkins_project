@@ -12,7 +12,7 @@ pipeline {
         git branch: 'main', url: 'https://github.com/halimo22/Jenkins_project'
     }
     }
-    }
+    
     stage('Build images') {
       steps{
         script {
@@ -52,3 +52,4 @@ pipeline {
       }
     }
   }
+}
