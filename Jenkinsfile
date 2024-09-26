@@ -1,43 +1,21 @@
 pipeline {
-  environment {
-    dockerproxyImage = ""
-    proxyimagename = "halimo2/proxy"
-    dockerbackendImage = ""
-    backendimagename = "halimo2/backend"
-    registryCredential = "Docker"
-  }
-  agent {
-    docker {
-      image 'docker:19.03.12-dind'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
-    }
-  }
   stages {
+    stages {
     stage('Checkout Source') {
       steps {
         git branch: 'main', url: 'https://github.com/halimo22/Jenkins_project'
       }
     }
-
-    stage('Build images') {
-      steps {
-        script {
-          dockerproxyImage = docker.build(proxyimagename, "./Dockerfiles/proxy")
-          dockerbackendImage = docker.build(backendimagename, "./Dockerfiles/backend")
+        stage('Push backend') {
+            steps {
+                build job: 'backend-publish'
+            }
         }
-      }
-    }
-
-    stage('Pushing Images to Dockerhub') {
-      steps {
-        script {
-          docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-            dockerproxyImage.push("latest")
-            dockerbackendImage.push("latest")
-          }
+        stage('Push proxy') {
+            steps {
+                build job: 'proxy-publish'
+            }
         }
-      }
-    }
 
     stage('Deploying to Kubernetes') {
       steps {
