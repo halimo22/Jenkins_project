@@ -16,3 +16,4 @@ add your own project , must have Jenkinsfile with the config
 
 apply all role/rolebinnding/clusterrole/clusterrolebinding
 
+
