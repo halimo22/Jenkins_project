@@ -100,8 +100,9 @@ pipeline {
                     }
                 }
                 container('kubectl') {
-
-             sh'kubectl apply -f repo3/K8S '
+                    script {
+                        // Apply the Kubernetes configuration
+             kubectl'apply -f repo3/K8S '
                
             }
                     
@@ -110,3 +111,4 @@ pipeline {
      
         }
     }
+}
