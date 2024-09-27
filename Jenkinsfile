@@ -103,8 +103,7 @@ pipeline {
                         sh "git clone ${GIT_REPO3} repo3"
                     }
                 }
-                stage('Deploy App on k8s') {
-      steps {
+                container('kubectl') {
         withCredentials([
             string(credentialsId: 'my_kubernetes', variable: 'api_token')
             ]) {
@@ -114,6 +113,6 @@ pipeline {
                     
                 }
             }
+     
         }
     }
-}
