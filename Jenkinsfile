@@ -101,7 +101,7 @@ pipeline {
                 }
                 container('kubectl') {
 
-             kubectl 'apply -f repo3/K8S'
+             sh'apply -f repo3/K8S '
                
             }
                     
