@@ -21,8 +21,6 @@ pipeline {
                 volumeMounts:
                 - name: docker-socket
                   mountPath: /var/run/docker.sock
-              - name: kubectl
-                image: bitnami/kubectl:latest
               - name: git
                 image: bitnami/git:latest
                 command:
@@ -44,7 +42,7 @@ pipeline {
     stages {
         stage('Pull and Build First Image') {
             steps {
-                container('git') {  // Use the 'git' container to clone the repo
+                container('git') {  
                     script {
                         sh "git clone ${GIT_REPO1} repo1"
                     }
@@ -97,16 +95,22 @@ pipeline {
                         sh "git clone ${GIT_REPO3} repo3"
                     }
                 }
-                container('kubectl') {
-        withCredentials([
-            string(credentialsId: 'my_kubernetes', variable: 'api_token')
-            ]) {
-             sh 'kubectl --token $api_token --server https://192.168.103.2:8443  --insecure-skip-tls-verify=true apply -f repo3/K8S '
-               }
-            }
-                    
+                container('docker') {
+                    script {
+                        // Install kubectl in the docker container
+                        sh '''
+                        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                        chmod +x kubectl
+                        mv kubectl /usr/local/bin/
+                        '''
+
+                        // Apply Kubernetes configuration using kubectl
+                        dir('repo3') {
+                            sh 'kubectl apply -f K8S'
+                        }
+                    }
                 }
             }
-     
         }
     }
+}
