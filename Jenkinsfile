@@ -44,7 +44,7 @@ pipeline {
         GIT_REPO3 = 'https://github.com/halimo22/Jenkins_project'
         DOCKER_REGISTRY = 'halimo2'
     }
-    stages {
+    node(POD_LABEL) {
         stage('Pull and Build First Image') {
             steps {
                 container('git') {  // Use the 'git' container to clone the repo
@@ -100,7 +100,6 @@ pipeline {
                         sh "git clone ${GIT_REPO3} repo3"
                     }
                 }
-                container('kubectl') {
                     script {
                         // Apply the Kubernetes configuration
              sh '''kubectl apply -f repo3/K8S/backend-deployment 
