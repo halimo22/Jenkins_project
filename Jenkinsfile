@@ -96,6 +96,7 @@ pipeline {
                     }
                 }
                 container('docker') {
+                  dir('repo3') {
                     script {
                         // Run kubectl in a separate container and pass the necessary configurations
                         sh '''
@@ -103,11 +104,12 @@ pipeline {
                           -v ~/.kube/config:/root/.kube/config \
                           -v /var/run/docker.sock:/var/run/docker.sock \
                           bitnami/kubectl:latest \
-                          apply -f /repo3/K8S
+                          apply -f K8S
                         '''
                     }
                 }
             }
         }
     }
+}
 }
