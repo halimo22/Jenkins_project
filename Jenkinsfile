@@ -22,7 +22,7 @@ pipeline {
                 - name: docker-socket
                   mountPath: /var/run/docker.sock
               - name: kubectl
-                image: bitnami/kubectl:latest
+                image: kumargaurav522/jnlp-kubectl-slave:latest
                 command:
                 - cat
                 tty: true
@@ -100,7 +100,7 @@ pipeline {
                         sh "git clone ${GIT_REPO3} repo3"
                     }
                 }
-                node('my-agent') {
+                container('kubectl') {
                     script {
                         // Apply the Kubernetes configuration
              sh 'kubectl apply -f repo3/K8S/backend-deployment.yaml'
