@@ -23,12 +23,6 @@ pipeline {
                   mountPath: /var/run/docker.sock
               - name: kubectl
                 image: bitnami/kubectl:latest
-                args:
-                - get
-                - pods
-                - --all-namespaces
-                - --watch
-                tty: true
               - name: git
                 image: bitnami/git:latest
                 command:
