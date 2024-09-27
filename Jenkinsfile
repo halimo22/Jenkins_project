@@ -25,6 +25,7 @@ pipeline {
                 image: bitnami/kubectl:latest
                 command:
                 - cat
+                tty: true
               - name: git
                 image: bitnami/git:latest
                 command:
