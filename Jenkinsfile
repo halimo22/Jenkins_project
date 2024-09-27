@@ -97,17 +97,14 @@ pipeline {
                 }
                 container('docker') {
                     script {
-                        // Install kubectl in the docker container
+                        // Run kubectl in a separate container and pass the necessary configurations
                         sh '''
-                        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                        chmod +x kubectl
-                        mv kubectl /usr/local/bin/
+                        docker run --rm \
+                          -v ~/.kube/config:/root/.kube/config \
+                          -v /var/run/docker.sock:/var/run/docker.sock \
+                          bitnami/kubectl:latest \
+                          kubectl apply -f /repo3/k8s-config.yaml
                         '''
-
-                        // Apply Kubernetes configuration using kubectl
-                        dir('repo3') {
-                            sh 'kubectl apply -f K8S'
-                        }
                     }
                 }
             }
