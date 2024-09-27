@@ -30,6 +30,8 @@ pipeline {
               - name: docker-socket
                 hostPath:
                   path: /var/run/docker.sock
+              - name: repo-volume
+                emptyDir: {}
             """
         }
     }
@@ -44,7 +46,7 @@ pipeline {
             steps {
                 container('git') {  
                     script {
-                        sh "git clone ${GIT_REPO1} repo1"
+                        sh "git clone ${GIT_REPO1} /repo-volume/repo1"
                     }
                 }
                 container('docker') {
@@ -54,7 +56,7 @@ pipeline {
                             sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
 
                             // Build and push the Docker image from the first repo
-                            dir('repo1') {
+                            dir('/repo-volume/repo1') {
                                 sh 'docker build -t backend .'
                                 sh "docker tag backend ${DOCKER_REGISTRY}/backend"
                                 sh "docker push ${DOCKER_REGISTRY}/backend"
@@ -68,7 +70,7 @@ pipeline {
             steps {
                 container('git') {
                     script {
-                        sh "git clone ${GIT_REPO2} repo2"
+                        sh "git clone ${GIT_REPO2} /repo-volume/repo2"
                     }
                 }
                 container('docker') {
@@ -78,7 +80,7 @@ pipeline {
                             sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
                             
                             // Build and push the Docker image from the second repo
-                            dir('repo2') {
+                            dir('/repo-volume/repo2') {
                                 sh 'docker build -t proxy .'
                                 sh "docker tag proxy ${DOCKER_REGISTRY}/proxy"
                                 sh "docker push ${DOCKER_REGISTRY}/proxy"
@@ -92,24 +94,23 @@ pipeline {
             steps {
                 container('git') {
                     script {
-                        sh "git clone ${GIT_REPO3} repo3"
+                        sh "git clone ${GIT_REPO3} /repo-volume/repo3"
                     }
                 }
                 container('docker') {
-                  dir('repo3') {
                     script {
                         // Run kubectl in a separate container and pass the necessary configurations
                         sh '''
                         docker run --rm \
-                          -v ~/.kube/config:/root/.kube/config \
+                          -v /root/.kube/config:/root/.kube/config \
                           -v /var/run/docker.sock:/var/run/docker.sock \
+                          -v /repo-volume/repo3:/repo3 \
                           bitnami/kubectl:latest \
-                          apply -f K8S
+                          kubectl apply -f /repo3/K8S
                         '''
                     }
                 }
             }
         }
     }
-}
 }
