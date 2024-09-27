@@ -1,13 +1,18 @@
 # Jenkins Project
-
-- Create a namespace for DevOps Tools / Jenkins
-
-```bash
-kubectl create namespace devops-tools
+```sh
+ helm repo add jenkins https://charts.jenkins.io
+ helm repo update
+ helm install jenkins jenkins/jenkins --set adminPassword=<your_password>
 ```
+- Access jenkins through minikube service
+```sh
+minikube service --all
+```
+Multibranch  project 
+source code : git 
+add your own project , must have Jenkinsfile with the config
 
-- Create a serviceAccount
+[My Jenkinsfile](Jenkinsfile)
 
-[text](serviceAccount.yaml)
+apply all role/rolebinnding/clusterrole/clusterrolebinding
 
-- 
