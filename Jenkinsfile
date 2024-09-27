@@ -103,7 +103,7 @@ pipeline {
                           -v ~/.kube/config:/root/.kube/config \
                           -v /var/run/docker.sock:/var/run/docker.sock \
                           bitnami/kubectl:latest \
-                          kubectl apply -f /repo3/k8s-config.yaml
+                          apply -f /repo3/k8s-config.yaml
                         '''
                     }
                 }
